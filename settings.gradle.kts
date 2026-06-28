@@ -1,3 +1,4 @@
+// Trigger GitHub Actions run with clean Gradle Wrapper
 pluginManagement {
   repositories {
     google {
