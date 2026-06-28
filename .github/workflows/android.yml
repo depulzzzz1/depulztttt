@@ -25,17 +25,6 @@ jobs:
           java-version: '17'
           cache: 'gradle'
 
-      - name: Validate and Fix Gradle Wrapper Jar
-        run: |
-          # If gradle-wrapper.jar is missing, corrupted, or not a valid zip archive, replace it
-          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ] || [ ! -s "gradle/wrapper/gradle-wrapper.jar" ] || ! unzip -t gradle/wrapper/gradle-wrapper.jar >/dev/null 2>&1; then
-            echo "gradle-wrapper.jar is missing, empty, or corrupted. Downloading a clean, official version..."
-            mkdir -p gradle/wrapper
-            curl -Lo gradle/wrapper/gradle-wrapper.jar https://raw.githubusercontent.com/gradle/gradle/v8.5.0/gradle/wrapper/gradle-wrapper.jar
-          else
-            echo "gradle-wrapper.jar is present and valid."
-          fi
-
       - name: Decode Keystore
         run: |
           if [ -f "debug.keystore.base64" ]; then

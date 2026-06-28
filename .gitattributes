@@ -1,3 +1,7 @@
 # Treat Gradle wrapper and all other JAR files as binary to prevent CRLF line ending corruption on Git checkout
 gradle-wrapper.jar binary
 *.jar binary
+
+# Ensure shell scripts always have LF line endings
+gradlew text eol=lf
+*.sh text eol=lf
