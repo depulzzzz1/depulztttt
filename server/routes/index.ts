@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import authRoutes from './authRoutes';
 import botRoutes from './botRoutes';
+import gatewayRoutes from './gatewayRoutes';
 
 const router = Router();
 
@@ -35,6 +36,7 @@ router.use(apiLimiter);
 
 // 4. Mount consolidated route paths
 router.use('/auth', authRoutes);
+router.use('/v1', gatewayRoutes);
 router.use('/', botRoutes);
 
 export default router;
