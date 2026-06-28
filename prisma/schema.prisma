@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id          Int       @id @default(autoincrement())
+  username    String    @unique
+  password    String
+  role        String    @default("Admin") // "Admin", "Owner"
+  isSuspended Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  sessions    Session[]
+  settings    Settings[]
+  messages    Message[]
+  logs        Log[]
+  broadcasts  Broadcast[]
+  autoReplies AutoReply[]
+}
+
+model Settings {
+  id          Int    @id @default(1)
+  botName     String @default("DEPMQ Bot")
+  ownerNumber String @default("6281234567890")
+  prefix      String @default("!")
+  timezone    String @default("GMT+7")
+  language    String @default("ID")
+
+  // Optional relation to User
+  userId      Int?
+  user        User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Message {
+  id         Int      @id @default(autoincrement())
+  chatId     String
+  chatName   String
+  sender     String
+  text       String
+  mediaType  String   @default("text") // "text", "image", "video", "audio", "document", "location", "contact"
+  mediaUrl   String   @default("")
+  timestamp  DateTime @default(now())
+  isIncoming Boolean  @default(true)
+
+  // Optional relation to User
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Group {
+  id          String  @id
+  name        String
+  memberCount Int
+  isMuted     Boolean @default(false)
+  isOpen      Boolean @default(true)
+}
+
+model Broadcast {
+  id         Int      @id @default(autoincrement())
+  name       String
+  message    String
+  mediaUri   String   @default("")
+  totalCount Int
+  sentCount  Int
+  status     String   @default("Completed") // "Running", "Paused", "Stopped", "Completed"
+  delay      Int      @default(3)
+  timestamp  DateTime @default(now())
+
+  // Optional relation to User
+  userId     Int?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Plugin {
+  id          String  @id
+  name        String
+  description String
+  isEnabled   Boolean @default(true)
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Log {
+  id        Int      @id @default(autoincrement())
+  level     String   // "INFO", "WARNING", "ERROR", "SUCCESS"
+  tag       String   // "BOT", "API", "SOCKET", "BROADCAST", "USER"
+  message   String
+  timestamp DateTime @default(now())
+
+  // Optional relation to User
+  userId    Int?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Contact {
+  id    Int    @id @default(autoincrement())
+  name  String
+  phone String @unique
+}
+
+model ApiKey {
+  id   Int    @id @default(autoincrement())
+  name String
+  key  String @unique
+  role String @default("Admin")
+}
+
+model AutoReply {
+  id        Int     @id @default(autoincrement())
+  keyword   String
+  matchType String  // "Contains", "Regex", "Exact"
+  response  String
+  mediaUri  String  @default("")
+  isEnabled Boolean @default(true)
+  priority  Int     @default(1)
+
+  // Optional relation to User
+  userId    Int?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
